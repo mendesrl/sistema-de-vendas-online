@@ -1,4 +1,6 @@
 import Order from "../src/Order";
+import Validate from "../src/Validate";
+
 
 test("should be calculate the total value of a product", function () {
   const order = new Order();
