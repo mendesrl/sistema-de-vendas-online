@@ -5,3 +5,9 @@ test("Deve testar um CPF válido", () => {
 
   expect(isValid).toBeTruthy();
 });
+
+test('Deve testar um CPF inválido', () =>{
+    const isValid = ValidateCpf("041-7648-09");
+
+    expect(isValid).toBeFalsy();
+})
