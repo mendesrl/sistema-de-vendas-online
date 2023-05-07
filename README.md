@@ -22,7 +22,7 @@ $  npx jest
 - [x] Deve criar um pedido com 3 produtos (com descrição, preço e quantidade) e calcular o valor total
 - [x] Deve criar um pedido com 3 produtos, associar um cupom de desconto e calcular o total (percentual sobre o total do pedido)
 - [ ] Não deve criar um pedido com cpf inválido (lançar algum tipo de erro)
-
+- [ ] Utilizar e refatorar o algoritmo de validação de cpf: https://github.com/rodrigobranas/cccat7_refactoring/blob/master/src/example2/cpfBefore.ts
 
 
 ### Autora
