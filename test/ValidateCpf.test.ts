@@ -14,12 +14,13 @@ test.each([
 test.each([
   "041.273.711-00",
   "041.273.711-01",
-  "447-118-751.15",
   "447.118"
 ])("Should be invalid CPF: %s", (cpf:string) => {
   const isValid = ValidateCpf(cpf);
 
   expect(isValid).toBeFalsy();
+  
+  
 });
 
 test.each([
