@@ -17,15 +17,10 @@ export function ValidateCpf(str: string) {
           dg1 = dg2 = rest = 0;
 
           for (let nCount = 1; nCount < str.length - 1; nCount++) {
-            // if (isNaN(parseInt(str.substring(nCount -1, nCount)))) {
-            // 	return false;
-            // } else {
-
             digito = parseInt(str.substring(nCount - 1, nCount));
             d1 = d1 + (11 - nCount) * digito;
 
             d2 = d2 + (12 - nCount) * digito;
-            // }
           }
 
           rest = d1 % 11;
@@ -40,8 +35,6 @@ export function ValidateCpf(str: string) {
           nDigResult = "" + dg1 + "" + dg2;
           return nDigVerific == nDigResult;
         } catch (e) {
-          console.error("Erro !" + e);
-
           return false;
         }
       } else return false;
