@@ -1,5 +1,4 @@
-// @ts-nocheck
-export function ValidateCpf(str) {
+export function ValidateCpf(str: string) {
   if (str !== null) {
     if (str !== undefined) {
       if (str.length >= 11 || str.length <= 14) {
