@@ -1,15 +1,19 @@
-export function ValidateCpf(str: string) {
-  if (!str) return false;
-  str = str.replace(/\D/g, '');
-  if (str.length !== 11) return false;
-  const allDigitsEqual = !str.split("").every((c) => c === str[0]);
+function isValidLength(cpf: string) {
+  return cpf.length !== 11;
+}
+
+export function ValidateCpf(cpf: string) {
+  if (!cpf) return false;
+  cpf = cpf.replace(/\D/g, '');
+  if (isValidLength(cpf)) return false;
+  const allDigitsEqual = !cpf.split("").every((c) => c === cpf[0]);
   if (!allDigitsEqual) return false;
 
   let d1 = 0;
   let d2 = 0;
 
-  for (let nCount = 1; nCount < str.length - 1; nCount++) {
-    const digito = parseInt(str.substring(nCount - 1, nCount));
+  for (let nCount = 1; nCount < cpf.length - 1; nCount++) {
+    const digito = parseInt(cpf.substring(nCount - 1, nCount));
 
     d1 = d1 + (11 - nCount) * digito;
 
@@ -22,7 +26,7 @@ export function ValidateCpf(str: string) {
   rest = d2 % 11;
   const dg2 = rest < 2 ? 0 :  11 - rest;
 
-  let nDigVerific = str.substring(str.length - 2, str.length);
+  let nDigVerific = cpf.substring(cpf.length - 2, cpf.length);
   let nDigResult = "" + dg1 + "" + dg2;
   return nDigVerific == nDigResult;
 }
