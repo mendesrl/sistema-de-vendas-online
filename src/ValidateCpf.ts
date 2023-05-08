@@ -7,7 +7,7 @@ function allDigitsSame(cpf: string) {
 }
 
 function removeNonDigits(cpf: string) {
-  return cpf.replace(/\D/g, "");
+  return cpf.toString().replace(/\D/g, "");
 }
 
 function calculateDigit(cpf: string, factor: number) {
