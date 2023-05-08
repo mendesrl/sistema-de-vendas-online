@@ -1,6 +1,6 @@
 export function ValidateCpf(str: string) {
   if (!str) return false;
-  str = str.replace(".", "").replace(".", "").replace("-", "").replace(" ", "");
+  str = str.replace(/\D/g, '');
   if (str.length !== 11) return false;
   const allDigitsEqual = !str.split("").every((c) => c === str[0]);
   if (!allDigitsEqual) return false;
