@@ -3,49 +3,52 @@ import express, { request, Request, Response } from "express";
 import { ValidateCpf } from "./ValidateCpf";
 import pgp from "pg-promise";
 import { ValidateCoupon } from "./ValidateCoupon";
-import { ValidateNegativeNumber } from "./ValidateNegativeNumber";
 
 const app = express();
 app.use(express.json());
 
 app.post("/checkout", async function (req: Request, res: Response) {
-  if (ValidateCpf(req.body.cpf)) {
-    const connection = pgp()(
-      "postgres://postgres:Postgres2023!@localhost:5432/cccat11"
-    );
-    const output = {
-      total: 0,
-    };
-    if (req.body.items) {
-      for (const item of req.body.items) {
-        const [productData] = await connection.query(
-          "select * from cccat11.product where id_product = $1",
-          [item.id_product]
-        );
-        const price = parseFloat(productData.price);
-        if (ValidateNegativeNumber(item.qtd)) {
+  const connection = pgp()(
+    "postgres://postgres:Postgres2023!@localhost:5432/cccat11"
+  );
+  try {
+    if (ValidateCpf(req.body.cpf)) {
+      const output = {
+        total: 0,
+      };
+      if (req.body.items) {
+        for (const item of req.body.items) {
+          if (item.qtd <= 0) throw new Error("Invalid quantity");
+
+          const [productData] = await connection.query(
+            "select * from cccat11.product where id_product = $1",
+            [item.id_product]
+          );
+          const price = parseFloat(productData.price);
           output.total += price * item.qtd;
-        } else {
-          res.json({ message: "Invalid quantity" });
         }
       }
-    }
-    if (req.body.coupon) {
-      const [couponData] = await connection.query(
-        "select * from cccat11.coupon where code = $1",
-        [req.body.coupon]
-      );
-      if (couponData && ValidateCoupon(couponData.expired)) {
-        output.total -=
-          (output.total * parseFloat(couponData.percentage)) / 100;
-      } else {
-        res.json({ message: "Invalid Coupon" });
-        return;
+      if (req.body.coupon) {
+        const [couponData] = await connection.query(
+          "select * from cccat11.coupon where code = $1",
+          [req.body.coupon]
+        );
+        if (couponData && ValidateCoupon(couponData.expired)) {
+          output.total -=
+            (output.total * parseFloat(couponData.percentage)) / 100;
+        } else {
+          res.json({ message: "Invalid Coupon" });
+          return;
+        }
       }
+      res.json(output);
+    } else {
+      res.json({ message: "Invalid CPF" });
     }
-    res.json(output);
-  } else {
-    res.json({ message: "Invalid CPF" });
+  } catch (error: any) {
+    res.status(422).json({ message: error.message });
+  } finally {
+    await connection.$pool.end();
   }
 });
 console.log("ouvindo");
