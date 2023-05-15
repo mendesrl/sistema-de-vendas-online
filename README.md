@@ -28,10 +28,11 @@ $  npx jest
 - [x] Não deve aplicar cupom inexistente
 - [x] Ao fazer um pedido, a quantidade de um item não pode ser negativa
 - [x] Ao fazer um pedido, o mesmo item não pode ser informado mais de uma vez
+- [x] Deve calcular o valor do frete com base nas dimensões (altura, largura e profundidade em cm) e o peso dos produtos (em kg)
+- [x] Deve retornar o preço mínimo de frete caso ele seja superior ao valor calculado
 - [] Nenhuma dimensão do item pode ser negativa
 - [] O peso do item não pode ser negativo
-- [] Deve calcular o valor do frete com base nas dimensões (altura, largura e profundidade em cm) e o peso dos produtos (em kg)
-- [] Deve retornar o preço mínimo de frete caso ele seja superior ao valor calculado
+
 
 ### Autora
 ---

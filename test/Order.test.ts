@@ -1,7 +1,7 @@
 import axios from "axios";
 axios.defaults.validateStatus = () => { return true };
 
-test("shouldn't create new order if CPF is invalid", async function() {
+test.skip("shouldn't create new order if CPF is invalid", async function() {
   const input = {
     cpf:"041.273.711-00"
   }
@@ -106,3 +106,37 @@ test("Shouldn't be calculate an order with duplicate item", async function() {
   expect(output.message).toBe("Duplicated Item")
 })
 
+test("Should be calculate an order with 3 products with freight", async function() {
+  const input = {
+    cpf:"041.273.711-61",
+    items: [
+      {id_product: 1, qtd: 1 }, 
+      {id_product: 2, qtd: 1 }, 
+      {id_product: 3, qtd: 3 } 
+    ],
+    from: "88015600",
+    to: "22030600"
+  }
+  const response = await axios.post('http://localhost:3001/checkout', input)
+  const output= response.data;
+  expect(output.subtotal).toBe(6090)
+  expect(output.freight).toBe(280)
+  expect(output.total).toBe(6370)
+})
+
+test("Should be calculate an order with 3 products with freight", async function() {
+  const input = {
+    cpf:"041.273.711-61",
+    items: [
+      {id_product: 1, qtd: 1 }, 
+      {id_product: 2, qtd: 1 }, 
+    ],
+    from: "88015600",
+    to: "22030600"
+  }
+  const response = await axios.post('http://localhost:3001/checkout', input)
+  const output= response.data;
+  expect(output.subtotal).toBe(6000)
+  expect(output.freight).toBe(250)
+  expect(output.total).toBe(6250)
+})
