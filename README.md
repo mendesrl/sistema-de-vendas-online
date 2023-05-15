@@ -21,9 +21,16 @@ $  npx jest
 ### Testes do Projeto - Parte 1
 - [x] Deve criar um pedido com 3 produtos (com descrição, preço e quantidade) e calcular o valor total
 - [x] Deve criar um pedido com 3 produtos, associar um cupom de desconto e calcular o total (percentual sobre o total do pedido)
-- [ ] Não deve criar um pedido com cpf inválido (lançar algum tipo de erro)
-- [ ] Utilizar e refatorar o algoritmo de validação de cpf: https://github.com/rodrigobranas/cccat7_refactoring/blob/master/src/example2/cpfBefore.ts
-
+- [x] Não deve criar um pedido com cpf inválido (lançar algum tipo de erro)
+- [x] Utilizar e refatorar o algoritmo de validação de cpf: https://github.com/rodrigobranas/cccat7_refactoring/blob/master/src/example2/cpfBefore.ts
+### Testes do Projeto - Parte 2
+- [x] Não deve aplicar cupom de desconto expirado
+- [x] Ao fazer um pedido, a quantidade de um item não pode ser negativa
+- [] Ao fazer um pedido, o mesmo item não pode ser informado mais de uma vez
+- [] Nenhuma dimensão do item pode ser negativa
+- [] O peso do item não pode ser negativo
+- [] Deve calcular o valor do frete com base nas dimensões (altura, largura e profundidade em cm) e o peso dos produtos (em kg)
+- [] Deve retornar o preço mínimo de frete caso ele seja superior ao valor calculado
 
 ### Autora
 ---
