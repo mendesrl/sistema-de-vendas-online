@@ -27,7 +27,7 @@ test("Should be calculate an order with 3 products", async function() {
   expect(output.total).toBe(6090)
 })
 
-test("Should be calculate an order with 3 products with discount coupon", async function() {
+test("Should be calculate an order with 3 products with discount coupon valid", async function() {
   const input = {
     cpf:"041.273.711-61",
     items: [
@@ -43,7 +43,7 @@ test("Should be calculate an order with 3 products with discount coupon", async 
   expect(output.total).toBe(4872)
 })
 
-test("Shouldn't be applied to the order an expired discount coupon", async function() {
+test("Shouldn't be applied to the order an expired discount coupon invalid", async function() {
   const input = {
     cpf:"041.273.711-61",
     items: [
@@ -52,6 +52,22 @@ test("Shouldn't be applied to the order an expired discount coupon", async funct
       {id_product: 3, qtd: 3 } //30
     ],
     coupon: "VALE10"
+  }
+  const response = await axios.post('http://localhost:3001/checkout', input)
+  const output= response.data;
+
+  expect(output.message).toBe('Invalid Coupon')
+})
+
+test("Shouldn't be applied to the order an non-existent coupon", async function() {
+  const input = {
+    cpf:"041.273.711-61",
+    items: [
+      {id_product: 1, qtd: 1 }, //1000
+      {id_product: 2, qtd: 1 }, //5000
+      {id_product: 3, qtd: 3 } //30
+    ],
+    coupon: "VALE0"
   }
   const response = await axios.post('http://localhost:3001/checkout', input)
   const output= response.data;

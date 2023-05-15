@@ -25,6 +25,7 @@ $  npx jest
 - [x] Utilizar e refatorar o algoritmo de validação de cpf: https://github.com/rodrigobranas/cccat7_refactoring/blob/master/src/example2/cpfBefore.ts
 ### Testes do Projeto - Parte 2
 - [x] Não deve aplicar cupom de desconto expirado
+- [x] Não deve aplicar cupom inexistente
 - [x] Ao fazer um pedido, a quantidade de um item não pode ser negativa
 - [] Ao fazer um pedido, o mesmo item não pode ser informado mais de uma vez
 - [] Nenhuma dimensão do item pode ser negativa

@@ -35,8 +35,7 @@ app.post("/checkout", async function (req: Request, res: Response) {
         "select * from cccat11.coupon where code = $1",
         [req.body.coupon]
       );
-      console.log(ValidateCoupon(couponData.expired));
-      if (ValidateCoupon(couponData.expired)) {
+      if (couponData && ValidateCoupon(couponData.expired)) {
         output.total -=
           (output.total * parseFloat(couponData.percentage)) / 100;
       } else {
