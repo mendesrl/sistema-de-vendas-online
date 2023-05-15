@@ -19,6 +19,12 @@ app.post("/checkout", async function (req: Request, res: Response) {
       if (req.body.items) {
         for (const item of req.body.items) {
           if (item.qtd <= 0) throw new Error("Invalid quantity");
+          if (
+            req.body.items.filter(
+              (i: any) => i.id_product === item.id_product
+            ).length > 1
+          )
+            throw new Error("Duplicated Item");
 
           const [productData] = await connection.query(
             "select * from cccat11.product where id_product = $1",
