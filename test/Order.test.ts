@@ -1,110 +1,161 @@
 import axios from "axios";
-import Order from "../src/Order";
+axios.defaults.validateStatus = () => {
+  return true;
+};
 
-test("shouldn't create new order if CPF is invalid", async function() {
+test("shouldn't create new order if CPF is invalid", async function () {
   const input = {
-    cpf:"041.273.711-00"
-  }
-  const response = await axios.post('http://localhost:3001/checkout', input)
-  const output= response.data;
-
-  expect(output.message).toBe('Invalid CPF')
-})
-
-
-test("Should be calculate an order with 3 products", async function() {
-  const input = {
-    cpf:"041.273.711-61",
+    cpf: "041.273.711-60",
     items: [
-      {id_product: 1, qtd: 1 }, //1000
-      {id_product: 2, qtd: 1 }, //5000
-      {id_product: 3, qtd: 3 } //30
-    ]
-  }
-  const response = await axios.post('http://localhost:3001/checkout', input)
-  const output= response.data;
-
-  expect(output.total).toBe(6090)
-})
-
-test("Should be calculate an order with 3 products with discount coupon", async function() {
-  const input = {
-    cpf:"041.273.711-61",
-    items: [
-      {id_product: 1, qtd: 1 }, //1000
-      {id_product: 2, qtd: 1 }, //5000
-      {id_product: 3, qtd: 3 } //30
+      { id_product: 1, qtd: 1 }, //1000
+      { id_product: 2, qtd: 1 }, //5000
+      { id_product: 3, qtd: 3 }, //30
     ],
-    coupon: "VALE20"
-  }
-  const response = await axios.post('http://localhost:3001/checkout', input)
-  const output= response.data;
+  };
+  const response = await axios.post("http://localhost:3001/checkout", input);
+  const output = response.data;
 
-  expect(output.total).toBe(4872)
-})
+  expect(output.message).toBe("Invalid CPF");
+});
 
-test("Shouldn't be applied to the order an expired discount coupon", async function() {
+test("Should be calculate an order with 3 products", async function () {
   const input = {
-    cpf:"041.273.711-61",
+    cpf: "041.273.711-61",
     items: [
-      {id_product: 1, qtd: 1 }, //1000
-      {id_product: 2, qtd: 1 }, //5000
-      {id_product: 3, qtd: 3 } //30
+      { id_product: 1, qtd: 1 }, //1000
+      { id_product: 2, qtd: 1 }, //5000
+      { id_product: 3, qtd: 3 }, //30
     ],
-    coupon: "VALE10"
-  }
-  const response = await axios.post('http://localhost:3001/checkout', input)
-  const output= response.data;
+  };
+  const response = await axios.post("http://localhost:3001/checkout", input);
+  const output = response.data;
 
-  expect(output.message).toBe('Invalid Coupon')
-})
+  expect(output.total).toBe(6090);
+});
 
-test("Shouldn't be calculate an order with quantity negative", async function() {
+test("Should be calculate an order with 3 products with discount coupon valid", async function () {
   const input = {
-    cpf:"041.273.711-61",
+    cpf: "041.273.711-61",
     items: [
-      {id_product: 1, qtd: 1 }, //1000
-      {id_product: 2, qtd: 0 }, //5000
-      {id_product: 3, qtd: -3 } //30
+      { id_product: 1, qtd: 1 }, //1000
+      { id_product: 2, qtd: 1 }, //5000
+      { id_product: 3, qtd: 3 }, //30
     ],
-    coupon: "VALE20"
-  }
-  const response = await axios.post('http://localhost:3001/checkout', input)
-  const output= response.data;
+    coupon: "VALE20",
+  };
+  const response = await axios.post("http://localhost:3001/checkout", input);
+  const output = response.data;
 
-  expect(output.message).toBe('Invalid quantity')
-})
+  expect(output.total).toBe(4872);
+});
 
-test("Shouldn't be calculate an order with duplicate item", async function() {
-  
-})
+test("Shouldn't be applied to the order an expired discount coupon invalid", async function () {
+  const input = {
+    cpf: "041.273.711-61",
+    items: [
+      { id_product: 1, qtd: 1 }, //1000
+      { id_product: 2, qtd: 1 }, //5000
+      { id_product: 3, qtd: 3 }, //30
+    ],
+    coupon: "VALE10",
+  };
+  const response = await axios.post("http://localhost:3001/checkout", input);
+  const output = response.data;
 
-// test("should be calculate the total value of a product", function () {
-//   const order = new Order();
-//   order.addProducts("Banana", "32.25", 2);
+  expect(output.message).toBe("Invalid Coupon");
+});
 
-//   const total = order.totalOrderAmount();
-//   expect(total).toBe(64.5);
-// });
+test("Shouldn't be applied to the order an non-existent coupon", async function () {
+  const input = {
+    cpf: "041.273.711-61",
+    items: [
+      { id_product: 1, qtd: 1 }, //1000
+      { id_product: 2, qtd: 1 }, //5000
+      { id_product: 3, qtd: 3 }, //30
+    ],
+    coupon: "VALE0",
+  };
+  const response = await axios.post("http://localhost:3001/checkout", input);
+  const output = response.data;
 
-// test("should be calculate an order with 3 products (with description, price and quantity) and calculate the total value", function () {
-//   const order = new Order();
-//   order.addProducts("Banana", "32.00", 2);
-//   order.addProducts("Avocado", "30.00", 1);
-//   order.addProducts("Orange", "20.00", 1);
+  expect(output.message).toBe("Invalid Coupon");
+});
 
-//   const total = order.totalOrderAmount();
-//   expect(total).toBe(114.0);
-// });
+test("Shouldn't be calculate an order with quantity negative", async function () {
+  const input = {
+    cpf: "041.273.711-61",
+    items: [
+      { id_product: 1, qtd: 1 }, //1000
+      { id_product: 2, qtd: 0 }, //5000
+      { id_product: 3, qtd: -3 }, //30
+    ],
+    coupon: "VALE20",
+  };
+  const response = await axios.post("http://localhost:3001/checkout", input);
+  const output = response.data;
 
-// test("should be calculate an order with 3 products must be calculated, associate a discount coupon and calculate the total (percentage of the total order)", function () {
-//     const order = new Order();
-//     order.addProducts("Banana", "10.00", 2);
-//     order.addProducts("Avocado", "40.00", 1);
-//     order.addProducts("Orange", "10.00", 6);
+  expect(response.status).toBe(422);
+  expect(output.message).toBe("Invalid quantity");
+});
 
-//     const discountCoupon = "30%"
+test("Shouldn't be calculate an order with duplicate item", async function () {
+  const input = {
+    cpf: "041.273.711-61",
+    items: [
+      { id_product: 1, qtd: 1 },
+      { id_product: 1, qtd: 1 },
+    ],
+  };
+  const response = await axios.post("http://localhost:3001/checkout", input);
+  const output = response.data;
+  expect(response.status).toBe(422);
+  expect(output.message).toBe("Duplicated Item");
+});
 
-//     const totalWithDiscount = order.totalOrderValueWithDiscount(discountCoupon);
-//     expect(totalWithDiscount).toBe(84);
-//   });
+test("Should be calculate an order with 3 products with freight minimal", async function () {
+  const input = {
+    cpf: "041.273.711-61",
+    items: [
+      { id_product: 1, qtd: 1 },
+      { id_product: 2, qtd: 1 },
+      { id_product: 3, qtd: 3 },
+    ],
+    from: "88015600",
+    to: "22030600",
+  };
+  const response = await axios.post("http://localhost:3001/checkout", input);
+  const output = response.data;
+  expect(output.subtotal).toBe(6090);
+  expect(output.freight).toBe(280);
+  expect(output.total).toBe(6370);
+});
+
+test("Should be calculate an order with 3 products with freight", async function () {
+  const input = {
+    cpf: "041.273.711-61",
+    items: [
+      { id_product: 1, qtd: 1 },
+      { id_product: 2, qtd: 1 },
+    ],
+    from: "88015600",
+    to: "22030600",
+  };
+  const response = await axios.post("http://localhost:3001/checkout", input);
+  const output = response.data;
+  expect(output.subtotal).toBe(6000);
+  expect(output.freight).toBe(250);
+  expect(output.total).toBe(6250);
+});
+
+test("Shouldn't be calculate an order with dimensions negatives", async function () {
+  const input = {
+    cpf: "041.273.711-61",
+    items: [{ id_product: 4, qtd: 1 }],
+    coupon: "VALE20",
+  };
+  const response = await axios.post("http://localhost:3001/checkout", input);
+  const output = response.data;
+
+  expect(response.status).toBe(422);
+  expect(output.message).toBe("Invalid dimensions");
+});

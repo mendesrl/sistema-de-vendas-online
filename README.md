@@ -25,12 +25,14 @@ $  npx jest
 - [x] Utilizar e refatorar o algoritmo de validação de cpf: https://github.com/rodrigobranas/cccat7_refactoring/blob/master/src/example2/cpfBefore.ts
 ### Testes do Projeto - Parte 2
 - [x] Não deve aplicar cupom de desconto expirado
+- [x] Não deve aplicar cupom inexistente
 - [x] Ao fazer um pedido, a quantidade de um item não pode ser negativa
-- [] Ao fazer um pedido, o mesmo item não pode ser informado mais de uma vez
-- [] Nenhuma dimensão do item pode ser negativa
-- [] O peso do item não pode ser negativo
-- [] Deve calcular o valor do frete com base nas dimensões (altura, largura e profundidade em cm) e o peso dos produtos (em kg)
-- [] Deve retornar o preço mínimo de frete caso ele seja superior ao valor calculado
+- [x] Ao fazer um pedido, o mesmo item não pode ser informado mais de uma vez
+- [x] Deve calcular o valor do frete com base nas dimensões (altura, largura e profundidade em cm) e o peso dos produtos (em kg)
+- [x] Deve retornar o preço mínimo de frete caso ele seja superior ao valor calculado
+- [x] Nenhuma dimensão do item pode ser negativa
+- [x] O peso do item não pode ser negativo
+
 
 ### Autora
 ---
