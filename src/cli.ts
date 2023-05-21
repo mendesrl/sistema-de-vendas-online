@@ -1,6 +1,3 @@
-import { ValidateCpf } from "./ValidateCpf";
-import pgp from "pg-promise";
-import { ValidateCoupon } from "./ValidateCoupon";
 import Checkout from "./Checkout";
 
 const input: {
