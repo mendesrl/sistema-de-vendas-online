@@ -18,7 +18,7 @@ type Output = {
 
 export default class Checkout {
     
-  async execute(input: Input): Promise<Output | undefined> {
+  async execute(input: Input): Promise<Output | any> {
     const output = {
       subtotal: 0,
       total: 0,
