@@ -1,7 +1,9 @@
 import axios from "axios";
+import sinon from "sinon";
 import Checkout from "../src/Checkout";
 import CouponRepository from "../src/CouponRepository";
 import ProductRepository from "../src/ProductRepository";
+import ProductRepositoryDatabase from "../src/ProductRepositoryDatabase";
 axios.defaults.validateStatus = () => {
   return true;
 };
@@ -212,4 +214,22 @@ test("Shouldn't be calculate an order with dimensions negatives", async function
   expect(() => checkout.execute(input)).rejects.toThrowError(
     "Invalid dimensions"
   );
+});
+
+test("Should be calculate an order with 3 products", async function () {
+  const productRepositoryStub = sinon.stub(ProductRepositoryDatabase.prototype, "get").resolves({
+    id_product: 1,
+    description: "A",
+    price: 1000,
+  })
+  const input = {
+    cpf: "041.273.711-61",
+    items: [
+      { id_product: 1, qtd: 1 },
+    ],
+  };
+
+  const output = await checkout.execute(input);
+  expect(output.total).toBe(1000);
+  productRepositoryStub.restore();
 });
