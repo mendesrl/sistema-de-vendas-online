@@ -1,12 +1,14 @@
 import { ValidateCpf } from "./ValidateCpf";
-
-import { ValidateCoupon } from "./ValidateCoupon";
 import ProductRepositoryDatabase from "./ProductRepositoryDatabase";
 import CouponRepositoryDatabase from "./CouponRepositoryDatabase";
 import ProductRepository from "./ProductRepository";
 import CouponRepository from "./CouponRepository";
+import OrderRepositoryDatabase from "./OrderRepositoryDatabase";
+import OrderRepository from "./OrderRepository";
+import ValidateCoupon from "./ValidateCoupon";
 
 type Input = {
+  idOrder: string,
   cpf: string;
   items: { id_product: number; qtd: number }[];
   coupon?: string;
@@ -23,7 +25,8 @@ type Output = {
 export default class Checkout {
   constructor(
     readonly productRepository: ProductRepository = new ProductRepositoryDatabase(),
-    readonly couponRepository: CouponRepository = new CouponRepositoryDatabase()
+    readonly couponRepository: CouponRepository = new CouponRepositoryDatabase(),
+    readonly orderRepository: OrderRepository = new OrderRepositoryDatabase()
   ) {}
 
   async execute(input: Input): Promise<Output | any> {
@@ -72,7 +75,7 @@ export default class Checkout {
           if (input.coupon) {
             const couponData = await this.couponRepository.get(input.coupon);
 
-            if (couponData && ValidateCoupon(couponData.expired)) {
+            if (couponData && new ValidateCoupon(couponData.expired)) {
               output.total -=
                 (output.total * parseFloat(couponData.percentage)) / 100;
             } else {
@@ -80,6 +83,19 @@ export default class Checkout {
             }
           }
           output.total += output.freight;
+          let sequence = await this.orderRepository.count();
+          sequence++;
+          const today = new Date();
+          const code = `${today.getFullYear()}${new String(sequence).padStart(6,"0")}`;
+          const order = {
+            code,
+            idOrder: input.idOrder,
+            cpf: input.cpf,
+            total: output.total,
+            freight: output.freight,
+            items: input.items
+          }
+          await this.orderRepository.save(order)
           return output;
         }
       } else {

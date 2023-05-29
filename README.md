@@ -18,12 +18,13 @@ $ pnpm install
 $  npx jest
 ```
 
-### Testes do Projeto - Parte 1
+## Testes
+### Projeto - Parte 1
 - [x] Deve criar um pedido com 3 produtos (com descrição, preço e quantidade) e calcular o valor total
 - [x] Deve criar um pedido com 3 produtos, associar um cupom de desconto e calcular o total (percentual sobre o total do pedido)
 - [x] Não deve criar um pedido com cpf inválido (lançar algum tipo de erro)
 - [x] Utilizar e refatorar o algoritmo de validação de cpf: https://github.com/rodrigobranas/cccat7_refactoring/blob/master/src/example2/cpfBefore.ts
-### Testes do Projeto - Parte 2
+### Projeto - Parte 2
 - [x] Não deve aplicar cupom de desconto expirado
 - [x] Não deve aplicar cupom inexistente
 - [x] Ao fazer um pedido, a quantidade de um item não pode ser negativa
@@ -32,7 +33,11 @@ $  npx jest
 - [x] Deve retornar o preço mínimo de frete caso ele seja superior ao valor calculado
 - [x] Nenhuma dimensão do item pode ser negativa
 - [x] O peso do item não pode ser negativo
-
+### Projeto - Parte 3
+- [x] Deve gerar o número de série do pedido
+- [x] Deve fazer um pedido, salvando no banco de dados
+- [x] Deve simular o frete, retornando o frete previsto para o pedido
+- [x] Deve validar o cupom de desconto, indicando em um boolean se o cupom é válido
 
 ### Autora
 ---
