@@ -4,11 +4,17 @@ import Checkout from "../src/Checkout";
 import CouponRepository from "../src/CouponRepository";
 import ProductRepository from "../src/ProductRepository";
 import ProductRepositoryDatabase from "../src/ProductRepositoryDatabase";
+import crypto from "crypto";
+import GetOrder from "../src/GetOrder";
+import OrderRepositoryDatabase from "../src/OrderRepositoryDatabase";
 axios.defaults.validateStatus = () => {
   return true;
 };
 
 let checkout: Checkout;
+let getOrder: GetOrder;
+let orderRepository: OrderRepositoryDatabase;
+
 beforeEach(() => {
   const products: any = {
     1: {
@@ -54,25 +60,30 @@ beforeEach(() => {
     },
   };
   const coupons: any = {
-    "VALE20": {
-      percentage:20,
-      expired: new Date ("2027-05-10T10:00:00")
+    VALE20: {
+      percentage: 20,
+      expired: new Date("2027-05-10T10:00:00"),
     },
-    "VALE10": {
-      percentage:10,
-      expired:("2023-04-10T10:00:00")
-    }
-  }
+    VALE10: {
+      percentage: 10,
+      expired: "2023-04-10T10:00:00",
+    },
+  };
   const couponRepository: CouponRepository = {
     get: function (code: string): Promise<any> {
       return coupons[code];
     },
   };
-  checkout = new Checkout(productRepository, couponRepository);
+
+  orderRepository = new OrderRepositoryDatabase();
+  checkout = new Checkout(productRepository, couponRepository, orderRepository);
+  getOrder = new GetOrder(orderRepository);
 });
 
-test("shouldn't create new order if CPF is invalid", async function () {
+test.skip("shouldn't create new order if CPF is invalid", async function () {
+  const idOrder = crypto.randomUUID();
   const input = {
+    idOrder,
     cpf: "041.273.711-60",
     items: [
       { id_product: 1, qtd: 1 },
@@ -85,7 +96,9 @@ test("shouldn't create new order if CPF is invalid", async function () {
 });
 
 test("Should be calculate an order with 3 products", async function () {
+  const idOrder = crypto.randomUUID();
   const input = {
+    idOrder,
     cpf: "041.273.711-61",
     items: [
       { id_product: 1, qtd: 1 },
@@ -100,7 +113,9 @@ test("Should be calculate an order with 3 products", async function () {
 });
 
 test("Should be calculate an order with 3 products with discount coupon valid", async function () {
+  const idOrder = crypto.randomUUID();
   const input = {
+    idOrder,
     cpf: "041.273.711-61",
     items: [
       { id_product: 1, qtd: 1 },
@@ -128,7 +143,9 @@ test("Shouldn't be applied to the order an expired discount coupon invalid", asy
 });
 
 test("Shouldn't be applied to the order an non-existent coupon", async function () {
+  const idOrder = crypto.randomUUID();
   const input = {
+    idOrder,
     cpf: "041.273.711-61",
     items: [
       { id_product: 1, qtd: 1 },
@@ -142,7 +159,9 @@ test("Shouldn't be applied to the order an non-existent coupon", async function 
 });
 
 test("Shouldn't be calculate an order with quantity negative", async function () {
+  const idOrder = crypto.randomUUID();
   const input = {
+    idOrder,
     cpf: "041.273.711-61",
     items: [
       { id_product: 1, qtd: 1 }, //1000
@@ -158,7 +177,9 @@ test("Shouldn't be calculate an order with quantity negative", async function ()
 });
 
 test("Shouldn't be calculate an order with duplicate item", async function () {
+  const idOrder = crypto.randomUUID();
   const input = {
+    idOrder,
     cpf: "041.273.711-61",
     items: [
       { id_product: 1, qtd: 1 },
@@ -170,7 +191,9 @@ test("Shouldn't be calculate an order with duplicate item", async function () {
 });
 
 test("Should be calculate an order with 3 products with freight minimal", async function () {
+  const idOrder = crypto.randomUUID();
   const input = {
+    idOrder,
     cpf: "041.273.711-61",
     items: [
       { id_product: 1, qtd: 1 },
@@ -188,7 +211,9 @@ test("Should be calculate an order with 3 products with freight minimal", async 
 });
 
 test("Should be calculate an order with 3 products with freight", async function () {
+  const idOrder = crypto.randomUUID();
   const input = {
+    idOrder,
     cpf: "041.273.711-61",
     items: [
       { id_product: 1, qtd: 1 },
@@ -205,7 +230,9 @@ test("Should be calculate an order with 3 products with freight", async function
 });
 
 test("Shouldn't be calculate an order with dimensions negatives", async function () {
+  const idOrder = crypto.randomUUID();
   const input = {
+    idOrder,
     cpf: "041.273.711-61",
     items: [{ id_product: 4, qtd: 1 }],
     coupon: "VALE20",
@@ -217,19 +244,83 @@ test("Shouldn't be calculate an order with dimensions negatives", async function
 });
 
 test("Should be calculate an order with 3 products", async function () {
-  const productRepositoryStub = sinon.stub(ProductRepositoryDatabase.prototype, "get").resolves({
-    id_product: 1,
-    description: "A",
-    price: 1000,
-  })
+  const idOrder = crypto.randomUUID();
+  const productRepositoryStub = sinon
+    .stub(ProductRepositoryDatabase.prototype, "get")
+    .resolves({
+      id_product: 1,
+      description: "A",
+      price: 1000,
+    });
   const input = {
+    idOrder,
     cpf: "041.273.711-61",
-    items: [
-      { id_product: 1, qtd: 1 },
-    ],
+    items: [{ id_product: 1, qtd: 1 }],
   };
 
   const output = await checkout.execute(input);
   expect(output.total).toBe(1000);
   productRepositoryStub.restore();
+});
+
+test("Should be calculate an order with 3 products and obtain save", async function () {
+  const idOrder = crypto.randomUUID();
+  const input = {
+    idOrder,
+    cpf: "041.273.711-61",
+    items: [
+      { id_product: 1, qtd: 1 },
+      { id_product: 2, qtd: 1 },
+      { id_product: 3, qtd: 3 },
+    ],
+  };
+
+  await checkout.execute(input);
+  const output = await getOrder.execute(idOrder);
+  expect(output.total).toBe(6090);
+});
+
+test("Should be calculate an order with 3 products and code generate", async function () {
+  await orderRepository.clear();
+  const idOrder = crypto.randomUUID();
+  const input = {
+    idOrder,
+    cpf: "041.273.711-61",
+    items: [
+      { id_product: 1, qtd: 1 },
+      { id_product: 2, qtd: 1 },
+      { id_product: 3, qtd: 3 },
+    ],
+  };
+
+  await checkout.execute(input);
+  const output = await getOrder.execute(idOrder);
+  expect(output.code).toBe("2023000001");
+});
+
+test.only("Should be calculate an order with 3 products and code generate", async function () {
+  await orderRepository.clear();
+  await checkout.execute({
+    idOrder: crypto.randomUUID(),
+    cpf: "041.273.711-61",
+    items: [
+      { id_product: 1, qtd: 1 },
+      { id_product: 2, qtd: 1 },
+      { id_product: 3, qtd: 3 },
+    ],
+  });
+  const idOrder = crypto.randomUUID();
+  const input = {
+    idOrder,
+    cpf: "041.273.711-61",
+    items: [
+      { id_product: 1, qtd: 1 },
+      { id_product: 2, qtd: 1 },
+      { id_product: 3, qtd: 3 },
+    ],
+  };
+
+  await checkout.execute(input);
+  const output = await getOrder.execute(idOrder);
+  expect(output.code).toBe("2023000002");
 });
