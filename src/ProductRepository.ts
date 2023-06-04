@@ -1,3 +1,5 @@
+import Product from "./Product";
+
 export default interface ProductRepository {
-    get (id_product: number): Promise<any>;
+    get (id_product: number): Promise<Product>;
 }
