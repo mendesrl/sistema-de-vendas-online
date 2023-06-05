@@ -6,6 +6,7 @@ import OrderRepositoryDatabase from "./OrderRepositoryDatabase";
 import OrderRepository from "./OrderRepository";
 import FreightCalculator from "./FreightCalculator";
 import Cpf from "./Cpf";
+import Order from "./Order";
 
 type Input = {
   idOrder: string;
@@ -14,6 +15,7 @@ type Input = {
   coupon?: string;
   from?: string;
   to?: string;
+  date: Date;
 };
 
 type Output = {
@@ -35,69 +37,21 @@ export default class Checkout {
       total: 0,
       freight: 0,
     };
-
-    try {
-      const cpf = new Cpf(input.cpf);
-      if (cpf.ValidateCpf(input.cpf)) {
-        const today = new Date();
-        if (input.items) {
-          for (const item of input.items) {
-            if (item.qtd <= 0) throw new Error("Invalid quantity");
-            if (
-              input.items.filter((i: any) => i.id_product === item.id_product)
-                .length > 1
-            )
-              throw new Error("Duplicated Item");
-
-            const product = await this.productRepository.get(item.id_product);
-
-            if (
-              product.width <= 0 ||
-              product.height <= 0 ||
-              product.length <= 0 ||
-              product.weight <= 0
-            )
-              throw new Error("Invalid dimensions");
-            const price = product.price;
-            output.subtotal += price * item.qtd;
-            if (input.from && input.to) {
-              const freight = FreightCalculator.calculate(product);
-              output.freight += freight * item.qtd;
-            }
-          }
-          output.total = output.subtotal;
-          if (input.coupon) {
-            const coupon = await this.couponRepository.get(input.coupon);
-
-            if (coupon && coupon.isValid(today)) {
-              output.total -= coupon.applyCoupon(output.total);
-            } else {
-              throw new Error("Invalid Coupon");
-            }
-          }
-          output.total += output.freight;
-          let sequence = await this.orderRepository.count();
-          sequence++;
-
-          const code = `${today.getFullYear()}${new String(sequence).padStart(
-            6,
-            "0"
-          )}`;
-          const order = {
-            code,
-            idOrder: input.idOrder,
-            cpf: input.cpf,
-            total: output.total,
-            freight: output.freight,
-            items: input.items,
-          };
-          await this.orderRepository.save(order);
-          return output;
-        }
-      } else {
-        throw new Error("Invalid CPF");
-      }
-    } finally {
+    const sequence = await this.orderRepository.count();
+    let total = 0;
+    const order = new Order(input.idOrder, input.cpf, input.date, sequence + 1);
+    for (const item of input.items) {
+      const product = await this.productRepository.get(item.id_product);
+      order.addItem(product, item.qtd);
+      order.freight += FreightCalculator.calculate(product) * item.qtd;
     }
+    if (input.coupon) {
+      const coupon = await this.couponRepository.get(input.coupon);
+      if(coupon && coupon.isValid(input.date || new Date())) {
+        output.total -= coupon.applyCoupon(output.total)
+      }
+    }
+    await this.orderRepository.save(order);
+    return output;
   }
 }

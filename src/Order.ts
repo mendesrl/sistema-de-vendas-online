@@ -5,9 +5,21 @@ import Product from "./Product";
 export default class Order {
   cpf: Cpf;
   items: Item[];
-  constructor(readonly id_order: string, cpf: string) {
+  code: string;
+  freight: number = 0;
+
+  constructor(
+    readonly id_order: string,
+    cpf: string,
+    date: Date = new Date,
+    sequence: number = 1
+  ) {
     this.cpf = new Cpf(cpf);
     this.items = [];
+    this.code = `${date.getFullYear()}${new String(sequence).padStart(
+      6,
+      "0"
+    )}`;
   }
 
   addItem(product: Product, qtd: number) {
