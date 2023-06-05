@@ -7,6 +7,8 @@ import ProductRepositoryDatabase from "../src/ProductRepositoryDatabase";
 import crypto from "crypto";
 import GetOrder from "../src/GetOrder";
 import OrderRepositoryDatabase from "../src/OrderRepositoryDatabase";
+import Product from "../src/Product";
+import Coupon from "../src/Coupon";
 axios.defaults.validateStatus = () => {
   return true;
 };
@@ -17,42 +19,10 @@ let orderRepository: OrderRepositoryDatabase;
 
 beforeEach(() => {
   const products: any = {
-    1: {
-      id_product: 1,
-      description: "A",
-      price: 1000,
-      width: 100,
-      height: 30,
-      length: 10,
-      weight: 3,
-    },
-    2: {
-      id_product: 2,
-      description: "B",
-      price: 5000,
-      width: 50,
-      height: 50,
-      length: 50,
-      weight: 22,
-    },
-    3: {
-      id_product: 3,
-      description: "C",
-      price: 30,
-      width: 10,
-      height: 10,
-      length: 10,
-      weight: 0.9,
-    },
-    4: {
-      id_product: 4,
-      description: "D",
-      price: 30,
-      width: -10,
-      height: -10,
-      length: -10,
-      weight: -1,
-    },
+    1: new Product(1, "A", 1000, 100, 30, 10, 3),
+    2: new Product(2, "B", 5000, 50, 50, 50, 22),
+    3: new Product(3, "C", 30, 10, 10, 10, 0.9),
+    4: new Product(4, "D", 30, -10, -10, -10, -1),
   };
   const productRepository: ProductRepository = {
     get: function (id_product: number): Promise<any> {
@@ -60,14 +30,8 @@ beforeEach(() => {
     },
   };
   const coupons: any = {
-    VALE20: {
-      percentage: 20,
-      expired: new Date("2027-05-10T10:00:00"),
-    },
-    VALE10: {
-      percentage: 10,
-      expired: "2023-04-10T10:00:00",
-    },
+    "VALE20": new Coupon("VALE20", 20, new Date("2027-05-10T10:00:00")),
+    "VALE10": new Coupon("VALE10", 10, new Date("2023-04-10T10:00:00")),
   };
   const couponRepository: CouponRepository = {
     get: function (code: string): Promise<any> {
@@ -247,11 +211,7 @@ test("Should be calculate an order with 3 products", async function () {
   const idOrder = crypto.randomUUID();
   const productRepositoryStub = sinon
     .stub(ProductRepositoryDatabase.prototype, "get")
-    .resolves({
-      id_product: 1,
-      description: "A",
-      price: 1000,
-    });
+    .resolves(new Product(1, "A", 1000, 100, 30, 10, 3));
   const input = {
     idOrder,
     cpf: "041.273.711-61",
@@ -298,7 +258,7 @@ test("Should be calculate an order with 3 products and code generate", async fun
   expect(output.code).toBe("2023000001");
 });
 
-test.only("Should be calculate an order with 3 products and code generate", async function () {
+test("Should be calculate an order with 3 products and code generate", async function () {
   await orderRepository.clear();
   await checkout.execute({
     idOrder: crypto.randomUUID(),

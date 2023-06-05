@@ -1,4 +1,5 @@
 import pgp from "pg-promise";
+import Product from "./Product";
 
 export default class ProductRepositoryDatabase {
   async get(id_product: number) {
@@ -10,6 +11,14 @@ export default class ProductRepositoryDatabase {
       [id_product]
     );
     await connection.$pool.end();
-    return productData;
+    return new Product(
+      productData.id_product,
+      productData.description,
+      parseFloat(productData.price),
+      productData.width,
+      productData.height,
+      productData.length,
+      parseFloat(productData.weight)
+    );
   }
 }

@@ -1,14 +1,14 @@
-import { ValidateCpf } from "./ValidateCpf";
 import ProductRepositoryDatabase from "./ProductRepositoryDatabase";
 import CouponRepositoryDatabase from "./CouponRepositoryDatabase";
 import ProductRepository from "./ProductRepository";
 import CouponRepository from "./CouponRepository";
 import OrderRepositoryDatabase from "./OrderRepositoryDatabase";
 import OrderRepository from "./OrderRepository";
-import ValidateCoupon from "./ValidateCoupon";
+import FreightCalculator from "./FreightCalculator";
+import Cpf from "./Cpf";
 
 type Input = {
-  idOrder: string,
+  idOrder: string;
   cpf: string;
   items: { id_product: number; qtd: number }[];
   coupon?: string;
@@ -37,7 +37,9 @@ export default class Checkout {
     };
 
     try {
-      if (ValidateCpf(input.cpf)) {
+      const cpf = new Cpf(input.cpf);
+      if (cpf.ValidateCpf(input.cpf)) {
+        const today = new Date();
         if (input.items) {
           for (const item of input.items) {
             if (item.qtd <= 0) throw new Error("Invalid quantity");
@@ -47,37 +49,28 @@ export default class Checkout {
             )
               throw new Error("Duplicated Item");
 
-            const productData = await this.productRepository.get(
-              item.id_product
-            );
+            const product = await this.productRepository.get(item.id_product);
 
             if (
-              productData.width <= 0 ||
-              productData.height <= 0 ||
-              productData.length <= 0 ||
-              productData.weight <= 0
+              product.width <= 0 ||
+              product.height <= 0 ||
+              product.length <= 0 ||
+              product.weight <= 0
             )
               throw new Error("Invalid dimensions");
-            const price = parseFloat(productData.price);
+            const price = product.price;
             output.subtotal += price * item.qtd;
             if (input.from && input.to) {
-              const volume =
-                ((((productData.width / 100) * productData.height) / 100) *
-                  productData.length) /
-                100;
-              const density = parseFloat(productData.weight) / volume;
-              let freight = volume * 1000 * (density / 100);
-              freight = Math.max(10, freight);
+              const freight = FreightCalculator.calculate(product);
               output.freight += freight * item.qtd;
             }
           }
           output.total = output.subtotal;
           if (input.coupon) {
-            const couponData = await this.couponRepository.get(input.coupon);
+            const coupon = await this.couponRepository.get(input.coupon);
 
-            if (couponData && new ValidateCoupon(couponData.expired)) {
-              output.total -=
-                (output.total * parseFloat(couponData.percentage)) / 100;
+            if (coupon && coupon.isValid(today)) {
+              output.total -= coupon.applyCoupon(output.total);
             } else {
               throw new Error("Invalid Coupon");
             }
@@ -85,17 +78,20 @@ export default class Checkout {
           output.total += output.freight;
           let sequence = await this.orderRepository.count();
           sequence++;
-          const today = new Date();
-          const code = `${today.getFullYear()}${new String(sequence).padStart(6,"0")}`;
+
+          const code = `${today.getFullYear()}${new String(sequence).padStart(
+            6,
+            "0"
+          )}`;
           const order = {
             code,
             idOrder: input.idOrder,
             cpf: input.cpf,
             total: output.total,
             freight: output.freight,
-            items: input.items
-          }
-          await this.orderRepository.save(order)
+            items: input.items,
+          };
+          await this.orderRepository.save(order);
           return output;
         }
       } else {
