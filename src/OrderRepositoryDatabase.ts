@@ -1,5 +1,6 @@
 import pgp from "pg-promise";
 import OrderRepository from "./OrderRepository";
+import Order from "./Order";
 
 export default class OrderRepositoryDatabase implements OrderRepository {
   
@@ -15,13 +16,13 @@ export default class OrderRepositoryDatabase implements OrderRepository {
     return orderData;
   }
 
-  async save(order: any): Promise<void> {
+  async save(order: Order): Promise<void> {
     const connection = pgp()(
       "postgres://postgres:Postgres2023!@localhost:5432/cccat11"
     );
     await connection.query(
       "insert into cccat11.order (id_order, code, cpf, total, freight) values ($1, $2, $3, $4, $5)",
-      [order.idOrder, order.code, order.cpf, order.total, order.freight]
+      [order.idOrder, order.code, order.cpf, order.getTotal(), order.freight]
     );
     await connection.$pool.end();
   }
