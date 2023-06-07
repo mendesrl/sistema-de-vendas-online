@@ -38,6 +38,11 @@ $  npx jest
 - [x] Deve fazer um pedido, salvando no banco de dados
 - [x] Deve simular o frete, retornando o frete previsto para o pedido
 - [x] Deve validar o cupom de desconto, indicando em um boolean se o cupom é válido
+### Projeto - Parte 4
+- [ ] Deve retornar um pedido com base no código (caso de uso)
+- [ ] Deve retornar a lista de pedidos (caso de uso)
+- [ ] Calcule a distância entre dois CEPs e utilize no algoritmo de cálculo do frete
+- [ ] Calcular frete (caso de uso)
 
 ### Autora
 ---
