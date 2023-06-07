@@ -22,7 +22,7 @@ export default class OrderRepositoryDatabase implements OrderRepository {
     );
     await connection.query(
       "insert into cccat11.order (id_order, code, cpf, total, freight) values ($1, $2, $3, $4, $5)",
-      [order.idOrder, order.code, order.cpf, order.getTotal(), order.freight]
+      [order.id_order, order.code, order.cpf, order.getTotal(), order.freight]
     );
     await connection.$pool.end();
   }
