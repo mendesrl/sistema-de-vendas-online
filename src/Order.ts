@@ -1,3 +1,4 @@
+import Coupon from "./Coupon";
 import Cpf from "./Cpf";
 import Item from "./Item";
 import Product from "./Product";
@@ -7,11 +8,12 @@ export default class Order {
   items: Item[];
   code: string;
   freight: number = 0;
+  coupon?: Coupon;
 
   constructor(
     readonly id_order: string,
     cpf: string,
-    date: Date = new Date,
+    readonly date: Date = new Date,
     sequence: number = 1
   ) {
     this.cpf = new Cpf(cpf);
@@ -34,6 +36,13 @@ export default class Order {
     for (const item of this.items) {
       total += item.getTotal();
     }
+    if(this.coupon) {
+      total -= this.coupon.applyCoupon(total)
+    }
+    total += this.freight;
     return total;
+  }
+  addCoupon(coupon: Coupon) {
+    if(coupon.isValid(this.date)) this.coupon = coupon;
   }
 }
