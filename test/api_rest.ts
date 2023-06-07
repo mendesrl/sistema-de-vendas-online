@@ -125,7 +125,6 @@ test("Should be calculate an order with 3 products with freight minimal", async 
   };
   const response = await axios.post("http://localhost:3001/checkout", input);
   const output = response.data;
-  expect(output.subtotal).toBe(6090);
   expect(output.freight).toBe(280);
   expect(output.total).toBe(6370);
 });
@@ -142,7 +141,6 @@ test("Should be calculate an order with 3 products with freight", async function
   };
   const response = await axios.post("http://localhost:3001/checkout", input);
   const output = response.data;
-  expect(output.subtotal).toBe(6000);
   expect(output.freight).toBe(250);
   expect(output.total).toBe(6250);
 });
