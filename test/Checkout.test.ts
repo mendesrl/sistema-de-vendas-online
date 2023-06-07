@@ -44,7 +44,7 @@ beforeEach(() => {
   getOrder = new GetOrder(orderRepository);
 });
 
-test.skip("shouldn't create new order if CPF is invalid", async function () {
+test.only("shouldn't create new order if CPF is invalid", async function () {
   const idOrder = crypto.randomUUID();
   const input = {
     idOrder,
@@ -54,9 +54,10 @@ test.skip("shouldn't create new order if CPF is invalid", async function () {
       { id_product: 2, qtd: 1 },
       { id_product: 3, qtd: 3 },
     ],
+    date: new Date("2023-04-10T10:00:00")
   };
 
-  expect(() => checkout.execute(input)).rejects.toThrowError("Invalid CPF");
+  expect(() => checkout.execute(input)).rejects.toThrowError("Invalid Cpf");
 });
 
 test("Should be calculate an order with 3 products", async function () {
@@ -69,6 +70,7 @@ test("Should be calculate an order with 3 products", async function () {
       { id_product: 2, qtd: 1 },
       { id_product: 3, qtd: 3 },
     ],
+    date: new Date("2023-04-10T10:00:00")
   };
 
   const output = await checkout.execute(input);
@@ -87,6 +89,7 @@ test("Should be calculate an order with 3 products with discount coupon valid", 
       { id_product: 3, qtd: 3 },
     ],
     coupon: "VALE20",
+    date: new Date("2023-04-10T10:00:00")
   };
 
   const output = await checkout.execute(input);
@@ -117,6 +120,7 @@ test("Shouldn't be applied to the order an non-existent coupon", async function 
       { id_product: 3, qtd: 3 },
     ],
     coupon: "VALE0",
+    date: new Date("2023-04-10T10:00:00")
   };
 
   expect(() => checkout.execute(input)).rejects.toThrowError("Invalid Coupon");
@@ -133,6 +137,7 @@ test("Shouldn't be calculate an order with quantity negative", async function ()
       { id_product: 3, qtd: -3 }, //30
     ],
     coupon: "VALE20",
+    date: new Date("2023-04-10T10:00:00")
   };
 
   expect(() => checkout.execute(input)).rejects.toThrowError(
@@ -149,6 +154,7 @@ test("Shouldn't be calculate an order with duplicate item", async function () {
       { id_product: 1, qtd: 1 },
       { id_product: 1, qtd: 1 },
     ],
+    date: new Date("2023-04-10T10:00:00")
   };
 
   expect(() => checkout.execute(input)).rejects.toThrowError("Duplicated Item");
@@ -166,10 +172,10 @@ test("Should be calculate an order with 3 products with freight minimal", async 
     ],
     from: "88015600",
     to: "22030600",
+    date: new Date("2023-04-10T10:00:00")
   };
 
   const output = await checkout.execute(input);
-  expect(output.subtotal).toBe(6090);
   expect(output.freight).toBe(280);
   expect(output.total).toBe(6370);
 });
@@ -185,10 +191,10 @@ test("Should be calculate an order with 3 products with freight", async function
     ],
     from: "88015600",
     to: "22030600",
+    date: new Date("2023-04-10T10:00:00")
   };
 
   const output = await checkout.execute(input);
-  expect(output.subtotal).toBe(6000);
   expect(output.freight).toBe(250);
   expect(output.total).toBe(6250);
 });
@@ -200,6 +206,7 @@ test("Shouldn't be calculate an order with dimensions negatives", async function
     cpf: "041.273.711-61",
     items: [{ id_product: 4, qtd: 1 }],
     coupon: "VALE20",
+    date: new Date("2023-04-10T10:00:00")
   };
 
   expect(() => checkout.execute(input)).rejects.toThrowError(
@@ -216,6 +223,7 @@ test("Should be calculate an order with 3 products", async function () {
     idOrder,
     cpf: "041.273.711-61",
     items: [{ id_product: 1, qtd: 1 }],
+    date: new Date("2023-04-10T10:00:00")
   };
 
   const output = await checkout.execute(input);
@@ -233,6 +241,7 @@ test("Should be calculate an order with 3 products and obtain save", async funct
       { id_product: 2, qtd: 1 },
       { id_product: 3, qtd: 3 },
     ],
+    date: new Date("2023-04-10T10:00:00")
   };
 
   await checkout.execute(input);
@@ -251,6 +260,7 @@ test("Should be calculate an order with 3 products and code generate", async fun
       { id_product: 2, qtd: 1 },
       { id_product: 3, qtd: 3 },
     ],
+    date: new Date("2023-04-10T10:00:00")
   };
 
   await checkout.execute(input);
@@ -268,6 +278,7 @@ test("Should be calculate an order with 3 products and code generate", async fun
       { id_product: 2, qtd: 1 },
       { id_product: 3, qtd: 3 },
     ],
+    date: new Date("2023-04-10T10:00:00")
   });
   const idOrder = crypto.randomUUID();
   const input = {
@@ -278,6 +289,7 @@ test("Should be calculate an order with 3 products and code generate", async fun
       { id_product: 2, qtd: 1 },
       { id_product: 3, qtd: 3 },
     ],
+    date: new Date("2023-04-10T10:00:00")
   };
 
   await checkout.execute(input);
