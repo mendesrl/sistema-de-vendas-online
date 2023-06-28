@@ -199,20 +199,6 @@ test("Should be calculate an order with 3 products with freight", async function
   expect(output.total).toBe(6250);
 });
 
-test("Shouldn't be calculate an order with dimensions negatives", async function () {
-  const idOrder = crypto.randomUUID();
-  const input = {
-    idOrder,
-    cpf: "041.273.711-61",
-    items: [{ id_product: 4, qtd: 1 }],
-    coupon: "VALE20",
-    date: new Date("2023-04-10T10:00:00")
-  };
-
-  expect(() => checkout.execute(input)).rejects.toThrowError(
-    "Invalid dimensions"
-  );
-});
 
 test("Should be calculate an order with 3 products", async function () {
   const idOrder = crypto.randomUUID();

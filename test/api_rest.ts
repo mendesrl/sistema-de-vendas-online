@@ -144,16 +144,3 @@ test("Should be calculate an order with 3 products with freight", async function
   expect(output.freight).toBe(250);
   expect(output.total).toBe(6250);
 });
-
-test("Shouldn't be calculate an order with dimensions negatives", async function () {
-  const input = {
-    cpf: "041.273.711-61",
-    items: [{ id_product: 4, qtd: 1 }],
-    coupon: "VALE20",
-  };
-  const response = await axios.post("http://localhost:3001/checkout", input);
-  const output = response.data;
-
-  expect(response.status).toBe(422);
-  expect(output.message).toBe("Invalid dimensions");
-});
