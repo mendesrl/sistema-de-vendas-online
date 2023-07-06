@@ -6,6 +6,7 @@ import OrderRepositoryDatabase from "./OrderRepositoryDatabase";
 import OrderRepository from "./OrderRepository";
 import FreightCalculator from "./FreightCalculator";
 import Order from "./Order";
+import RepositoryFactory from "./RepositoryFactory";
 
 type Input = {
   idOrder: string;
@@ -23,17 +24,19 @@ type Output = {
 };
 
 export default class Checkout {
-  constructor(
-    readonly productRepository: ProductRepository = new ProductRepositoryDatabase(),
-    readonly couponRepository: CouponRepository = new CouponRepositoryDatabase(),
-    readonly orderRepository: OrderRepository = new OrderRepositoryDatabase()
-  ) {}
+  orderRepository: OrderRepository;
+  productRepository: ProductRepository;
+  couponRepository: CouponRepository;
+  constructor(repositoryFactory: RepositoryFactory) {
+    this.orderRepository = repositoryFactory.createOrderRepository();
+    this.productRepository = repositoryFactory.createProductRepository();
+    this.couponRepository = repositoryFactory.createCouponRepository();
+  }
 
   async execute(input: Input): Promise<Output> {
     const sequence = await this.orderRepository.count();
     const order = new Order(input.idOrder, input.cpf, input.date, sequence + 1);
     for (const item of input.items) {
-      console.log('dentro do for');
       const product = await this.productRepository.get(item.id_product);
       order.addItem(product, item.qtd);
       order.freight += FreightCalculator.calculate(product) * item.qtd;
