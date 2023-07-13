@@ -1,11 +1,15 @@
 import CouponRepository from "./CouponRepository";
+import RepositoryFactory from "./RepositoryFactory";
 
 type Output = {
   isValid: boolean;
 };
 
 export default class ValidateCoupon {
-  constructor(readonly couponRepository: CouponRepository) {}
+  couponRepository: CouponRepository;
+  constructor(repositoryFactory: RepositoryFactory) {
+    this.couponRepository = repositoryFactory.createCouponRepository()
+  }
   async execute(code: string): Promise<Output> {
     const output = {
       isValid: false,

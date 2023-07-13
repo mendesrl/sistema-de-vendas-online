@@ -11,15 +11,3 @@ test("Should be able to calculate the density", () => {
   const density = product.getDensity();
   expect(density).toBe(100);
 });
-
-// test("Should be able create with invalid dimensions", () => {
-//   expect(() => new Product(1, "A", 1000, -100, -30, -10, 3)).toThrowError(
-//     "Invalid dimensions"
-//   );
-// });
-
-// test("Should be able create with invalid weight", () => {
-//   expect(() => new Product(1, "A", 1000, 100, 30, 10, -3)).toThrowError(
-//     "Invalid weight"
-//   );
-// });

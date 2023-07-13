@@ -33,7 +33,7 @@ test("shouldn't be add duplicated item", function () {
   order.addItem(new Product(1, "A", 1000, 100, 30, 10, 3), 1),
     expect(() =>
       order.addItem(new Product(1, "A", 1000, 100, 30, 10, 3), 1)
-    ).toThrowError("Duplicate item");
+    ).toThrowError("Duplicated Item");
 });
 
 test("should be calculate new order and generate code", function () {
