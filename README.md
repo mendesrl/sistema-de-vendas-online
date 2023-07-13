@@ -39,11 +39,14 @@ $  npx jest
 - [x] Deve simular o frete, retornando o frete previsto para o pedido
 - [x] Deve validar o cupom de desconto, indicando em um boolean se o cupom é válido
 ### Projeto - Parte 4
-- [ ] Deve retornar um pedido com base no código (caso de uso)
-- [ ] Deve retornar a lista de pedidos (caso de uso)
-- [ ] Calcule a distância entre dois CEPs e utilize no algoritmo de cálculo do frete
-- [ ] Calcular frete (caso de uso)
-
+- [x] Deve retornar um pedido com base no código (caso de uso)
+- [x] Deve retornar a lista de pedidos (caso de uso)
+- [x] Calcule a distância entre dois CEPs e utilize no algoritmo de cálculo do frete
+- [x] Calcular frete (caso de uso)
+### Projeto - Parte 5
+- [ ] Extraia o catalogo de itens para um bounded context
+- [ ] Extraia o checkout para um bounded context
+- [ ] Extraia o frete para um bounded context
 ### Autora
 ---
 
