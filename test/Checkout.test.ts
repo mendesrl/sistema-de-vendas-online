@@ -7,6 +7,8 @@ import GetOrder from "../src/GetOrder";
 import Product from "../src/Product";
 import DatabaseRepositoryFactory from "../src/DatabaseRepositoryFactory";
 import RepositoryFactory from "../src/RepositoryFactory";
+import PgPromiseAdapter from "../src/PgPromisseAdapter";
+import DatabaseConnection from "../src/DatabaseConnection";
 axios.defaults.validateStatus = () => {
   return true;
 };
@@ -14,8 +16,11 @@ axios.defaults.validateStatus = () => {
 let checkout: Checkout;
 let getOrder: GetOrder;
 let repositoryFactory: RepositoryFactory;
-beforeEach(() => {
-  repositoryFactory = new DatabaseRepositoryFactory();
+let connection: DatabaseConnection; 
+beforeEach(async() => {
+  connection = new PgPromiseAdapter();
+  await connection.connect();
+  repositoryFactory = new DatabaseRepositoryFactory(connection);
   checkout = new Checkout(repositoryFactory);
   getOrder = new GetOrder(repositoryFactory);
 });
@@ -33,7 +38,7 @@ test("shouldn't create new order if CPF is invalid", async function () {
     date: new Date("2023-04-10T10:00:00"),
   };
 
-  expect(() => checkout.execute(input)).rejects.toThrowError("Invalid Cpf");
+ await expect(() => checkout.execute(input)).rejects.toThrowError("Invalid Cpf");
 });
 
 test("Should be calculate an order with 3 products", async function () {
@@ -116,7 +121,7 @@ test("Shouldn't be calculate an order with quantity negative", async function ()
     date: new Date("2023-04-10T10:00:00"),
   };
 
-  expect(() => checkout.execute(input)).rejects.toThrowError(
+  await expect(() => checkout.execute(input)).rejects.toThrowError(
     "Invalid quantity"
   );
 });
@@ -133,7 +138,7 @@ test("Shouldn't be calculate an order with duplicate item", async function () {
     date: new Date("2023-04-10T10:00:00"),
   };
 
-  expect(() => checkout.execute(input)).rejects.toThrowError("Duplicated Item");
+  await expect(() => checkout.execute(input)).rejects.toThrowError("Duplicated Item");
 });
 
 test("Should be calculate an order with 3 products with freight minimal", async function () {
@@ -258,3 +263,7 @@ test("Should be calculate an order with 3 products and code generate", async fun
   const output = await getOrder.execute(idOrder);
   expect(output.code).toBe("2023000002");
 });
+
+afterEach(async() => {
+  await connection.close();
+})
