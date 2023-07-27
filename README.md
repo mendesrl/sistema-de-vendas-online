@@ -45,7 +45,7 @@ $  npx jest
 - [x] Calcular frete (caso de uso)
 ### Projeto - Parte 5
 - [x] Extraia o catalogo de itens para um bounded context
-- [ ] Extraia o checkout para um bounded context
+- [x] Extraia o checkout para um bounded context
 - [ ] Extraia o frete para um bounded context
 ### Autora
 ---
